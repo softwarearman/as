@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Question Bank - EduPortal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #000080; --secondary: #00BFFF; --bg-light: #f4f6f9; --white: #ffffff; --text-dark: #333333; }
+        body { background-color: var(--bg-light); color: var(--text-dark); animation: fadeIn 0.4s ease; }
+        
+        header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        header .logo { font-size: 20px; font-weight: bold; }
+        
+        .nav-bar { background: var(--white); display: flex; justify-content: center; gap: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto; white-space: nowrap; }
+        .nav-bar a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: 0.3s; }
+        .nav-bar a:hover, .nav-bar a.active { background: var(--secondary); color: white; }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+        .q-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border-left: 4px solid var(--secondary); animation: fadeIn 0.4s ease; }
+        .q-card h4 { color: var(--primary); margin-bottom: 5px; font-size: 13px; text-transform: uppercase; }
+        .q-card h3 { font-size: 17px; margin-bottom: 10px; }
+        .q-card p { background: #f9f9f9; padding: 12px; border-radius: 6px; font-size: 14px; color: #555; }
+        .no-data { text-align: center; color: #777; margin-top: 40px; font-size: 15px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        
+        .refresh-btn { background: var(--primary); color: white; border: none; padding: 8px 15px; border-radius: 6px; cursor: pointer; font-size: 13px; font-weight: bold; transition: 0.3s; }
+        .refresh-btn:hover { background: #000055; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @media(max-width: 768px) { .nav-bar { justify-content: flex-start; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">EduPortal</div>
+        <div style="font-size: 14px;">Question Bank</div>
+    </header>
+
+    <div class="nav-bar">
+        <a href="index.html">Dashboard</a>
+        <a href="question-bank.html" class="active">Question Bank</a>
+        <a href="class.html">Class</a>
+        <a href="exam.html">Exam</a>
+        <a href="pdf.html">PDF</a>
+        <a href="admission-info.html">Admission</a>
+        <a href="course.html">Course</a>
+        <a href="account.html">Account</a>
+    </div>
+
+    <div class="container">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <h2>প্রশ্ন ব্যাংক ও সমাধান</h2>
+            <button class="refresh-btn" onclick="loadQuestions()">🔄 রিফ্রেশ</button>
+        </div>
+        <div id="questionList"></div>
+    </div>
+
+    <script>
+        function loadQuestions() {
+            const container = document.getElementById('questionList');
+            const storedData = localStorage.getItem('questions');
+            const questions = storedData ? JSON.parse(storedData) : [];
+
+            if (questions.length === 0) {
+                container.innerHTML = '<div class="no-data">কোনো প্রশ্ন পাওয়া যায়নি। অ্যাডমিন প্যানেল থেকে প্রশ্ন যোগ করুন।</div>';
+                return;
+            }
+
+            container.innerHTML = '';
+            for (let i = questions.length - 1; i >= 0; i--) {
+                let q = questions[i];
+                container.innerHTML += `
+                    <div class="q-card">
+                        <h4>বিষয়: ${q.subject || 'সাধারণ'}</h4>
+                        <h3>প্রশ্ন: ${q.title}</h3>
+                        <p><strong>উত্তর/ব্যাখ্যা:</strong> ${q.answer || 'কোনো ব্যাখ্যা দেওয়া হয়নি।'}</p>
+                    </div>
+                `;
+            }
+        }
+        window.onload = loadQuestions;
+        window.addEventListener('storage', loadQuestions);
+    </script>
+</body>
+</html>

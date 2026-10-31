@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Portal - Dashboard</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #000080; --secondary: #00BFFF; --bg-light: #f4f6f9; --white: #ffffff; --text-dark: #333333; }
+        body { background-color: var(--bg-light); color: var(--text-dark); animation: fadeIn 0.4s ease; }
+        
+        header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        header .logo { font-size: 20px; font-weight: bold; }
+        
+        .nav-bar { background: var(--white); display: flex; justify-content: center; gap: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto; white-space: nowrap; }
+        .nav-bar a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: 0.3s; }
+        .nav-bar a:hover, .nav-bar a.active { background: var(--secondary); color: white; transform: translateY(-1px); }
+
+        .container { max-width: 1000px; margin: 30px auto; padding: 0 15px; }
+        .card { background: white; padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 20px; animation: fadeIn 0.5s ease; }
+        .card h2 { color: var(--primary); margin-bottom: 15px; }
+        
+        .notice-box { background: #fff3cd; border-left: 5px solid #ffc107; padding: 15px; border-radius: 6px; font-size: 15px; margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 20px; }
+        .menu-card { background: linear-gradient(135deg, #ffffff, var(--bg-light)); padding: 25px; text-align: center; border-radius: 8px; text-decoration: none; color: var(--primary); font-weight: bold; transition: 0.3s; border: 1px solid #e0e0e0; box-shadow: 0 2px 8px rgba(0,0,0,0.03); }
+        .menu-card:hover { background: var(--primary); color: white; transform: translateY(-5px); box-shadow: 0 6px 20px rgba(0,0,0,0.15); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @media(max-width: 768px) { .nav-bar { justify-content: flex-start; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">EduPortal</div>
+        <div style="font-size: 14px;">স্বাগতম, শিক্ষার্থী!</div>
+    </header>
+
+    <div class="nav-bar">
+        <a href="index.html" class="active">Dashboard</a>
+        <a href="question-bank.html">Question Bank</a>
+        <a href="class.html">Class</a>
+        <a href="exam.html">Exam</a>
+        <a href="pdf.html">PDF</a>
+        <a href="admission-info.html">Admission</a>
+        <a href="course.html">Course</a>
+        <a href="account.html">Account</a>
+    </div>
+
+    <div class="container">
+        <div id="noticeSection" class="notice-box" style="display:none;">
+            <strong>📢 জরুরি নোটিশ:</strong> <span id="noticeText"></span>
+        </div>
+
+        <div class="card">
+            <h2>শিক্ষা প্ল্যাটফর্মে আপনাকে স্বাগতম</h2>
+            <p>আপনার পড়াশোনাকে সহজ করতে এখানে প্রশ্ন ব্যাংক, অনলাইন ক্লাস, এক্সাম এবং প্রয়োজনীয় ফাইল দেওয়া রয়েছে। যেকোনো মুহূর্তে মেনু থেকে আপনার কাঙ্ক্ষিত সেকশনে চলে যান।</p>
+            
+            <div class="grid">
+                <a href="question-bank.html" class="menu-card">📚 Question Bank</a>
+                <a href="class.html" class="menu-card">🎥 Video Class</a>
+                <a href="exam.html" class="menu-card">📝 Online Exam</a>
+                <a href="pdf.html" class="menu-card">📂 PDF & Notes</a>
+                <a href="admission-info.html" class="menu-card">🎓 Admission Info</a>
+                <a href="course.html" class="menu-card">💼 Courses</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        window.onload = function() {
+            const savedNotice = localStorage.getItem('siteNotice');
+            if (savedNotice) {
+                document.getElementById('noticeText').innerText = savedNotice;
+                document.getElementById('noticeSection').style.display = 'block';
+            }
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admission Info - EduPortal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #000080; --secondary: #00BFFF; --bg-light: #f4f6f9; --white: #ffffff; --text-dark: #333333; }
+        body { background-color: var(--bg-light); color: var(--text-dark); animation: fadeIn 0.4s ease; }
+        
+        header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        header .logo { font-size: 20px; font-weight: bold; }
+        
+        .nav-bar { background: var(--white); display: flex; justify-content: center; gap: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto; white-space: nowrap; }
+        .nav-bar a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: 0.3s; }
+        .nav-bar a:hover, .nav-bar a.active { background: var(--secondary); color: white; }
+
+        .container { max-width: 900px; margin: 30px auto; padding: 0 15px; }
+        .adm-card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 3px 10px rgba(0,0,0,0.05); margin-bottom: 15px; border-left: 4px solid var(--primary); animation: fadeIn 0.4s ease; }
+        .adm-card h3 { color: var(--primary); margin-bottom: 8px; font-size: 18px; }
+        .adm-card span { font-size: 12px; color: #777; display: block; margin-bottom: 10px; }
+        .adm-card p { font-size: 14px; color: #555; white-space: pre-wrap; }
+        
+        .no-data { text-align: center; color: #777; margin-top: 40px; font-size: 15px; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @media(max-width: 768px) { .nav-bar { justify-content: flex-start; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">EduPortal</div>
+        <div style="font-size: 14px;">Admission Info</div>
+    </header>
+
+    <div class="nav-bar">
+        <a href="index.html">Dashboard</a>
+        <a href="question-bank.html">Question Bank</a>
+        <a href="class.html">Class</a>
+        <a href="exam.html">Exam</a>
+        <a href="pdf.html">PDF</a>
+        <a href="admission-info.html" class="active">Admission</a>
+        <a href="course.html">Course</a>
+        <a href="account.html">Account</a>
+    </div>
+
+    <div class="container">
+        <h2>ভর্তি সংক্রান্ত তথ্য ও সার্কুলার</h2>
+        <div id="admList" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        function loadAdmission() {
+            const container = document.getElementById('admList');
+            const info = JSON.parse(localStorage.getItem('admissionInfo') || '[]');
+            if (info.length === 0) {
+                container.innerHTML = '<div class="no-data">কোনো ভর্তি বিজ্ঞপ্তি পাওয়া যায়নি।</div>';
+                return;
+            }
+            container.innerHTML = '';
+            for (let i = info.length - 1; i >= 0; i--) {
+                let item = info[i];
+                container.innerHTML += `
+                    <div class="adm-card">
+                        <h3>🎓 ${item.title}</h3>
+                        <span>প্রকাশের তারিখ: ${item.date}</span>
+                        <p>${item.details || ''}</p>
+                    </div>
+                `;
+            }
+        }
+        window.onload = loadAdmission;
+        window.addEventListener('storage', loadAdmission);
+    </script>
+</body>
+</html>

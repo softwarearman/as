@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Control Panel - EduPortal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #000080; --secondary: #00BFFF; --bg-light: #f4f6f9; --white: #ffffff; --text-dark: #333333; --border: #e0e0e0; }
+        body { background-color: var(--bg-light); color: var(--text-dark); }
+
+        #loginOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.85); display: flex; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.4s ease; }
+        .login-card { background: var(--white); padding: 30px; border-radius: 12px; width: 100%; max-width: 400px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3); text-align: center; }
+        .login-card h2 { color: var(--primary); margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 5px; font-size: 14px; font-weight: 600; }
+        .input-group input, .input-group select, .input-group textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; outline: none; transition: 0.3s; }
+        .input-group input:focus, .input-group textarea:focus { border-color: var(--secondary); box-shadow: 0 0 5px rgba(0,191,255,0.3); }
+        .btn { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: var(--white); border: none; padding: 10px 20px; border-radius: 6px; cursor: pointer; font-size: 15px; font-weight: 600; transition: 0.3s; width: 100%; }
+        .btn:hover { opacity: 0.9; transform: translateY(-2px); }
+        .error-msg { color: red; font-size: 13px; margin-top: 10px; display: none; }
+
+        #adminApp { display: none; animation: fadeIn 0.5s ease; }
+        header { background-color: var(--primary); color: var(--white); padding: 15px 30px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .logout-btn { background: #ff4d4d; border: none; color: white; padding: 8px 16px; border-radius: 4px; cursor: pointer; font-weight: bold; }
+        
+        .container { display: flex; min-height: calc(100vh - 60px); }
+        .sidebar { width: 260px; background: var(--white); border-right: 1px solid var(--border); padding: 20px 0; }
+        .sidebar ul { list-style: none; }
+        .sidebar li { padding: 14px 25px; cursor: pointer; font-weight: 600; border-left: 4px solid transparent; transition: 0.2s; font-size: 14px; }
+        .sidebar li:hover, .sidebar li.active { background-color: rgba(0, 191, 255, 0.1); color: var(--primary); border-left-color: var(--secondary); }
+
+        .content { flex: 1; padding: 30px; overflow-y: auto; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease; }
+        .card { background: var(--white); padding: 25px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; border-top: 4px solid var(--primary); }
+        .card h3 { margin-bottom: 15px; color: var(--primary); border-bottom: 2px solid var(--bg-light); padding-bottom: 8px; }
+
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        table th, table td { border: 1px solid var(--border); padding: 12px; text-align: left; font-size: 14px; }
+        table th { background-color: var(--bg-light); color: var(--primary); }
+        .delete-btn { background: #ff4d4d; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        @media(max-width: 768px) {
+            .container { flex-direction: column; }
+            .sidebar { width: 100%; display: flex; overflow-x: auto; padding: 10px; gap: 5px; background: var(--white); }
+            .sidebar li { white-space: nowrap; border-left: none; border-bottom: 3px solid transparent; padding: 8px 12px; border-radius: 4px; }
+            .sidebar li.active { border-bottom-color: var(--secondary); background: rgba(0,191,255,0.1); }
+            .content { padding: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="loginOverlay">
+        <div class="login-card">
+            <h2>Admin Login</h2>
+            <div class="input-group">
+                <label>Password</label>
+                <input type="password" id="adminPass" placeholder="Enter admin password">
+            </div>
+            <button class="btn" onclick="loginAdmin()">Login</button>
+            <p id="errorMsg" class="error-msg">ভুল পাসওয়ার্ড! আবার চেষ্টা করুন।</p>
+        </div>
+    </div>
+
+    <div id="adminApp">
+        <header>
+            <div style="font-size: 20px; font-weight: bold;">Admin Control Panel</div>
+            <button class="logout-btn" onclick="logoutAdmin()">Logout</button>
+        </header>
+
+        <div class="container">
+            <nav class="sidebar">
+                <ul>
+                    <li class="active" onclick="switchTab('dashboard')">Dashboard</li>
+                    <li onclick="switchTab('question')">Question Bank</li>
+                    <li onclick="switchTab('class')">Class</li>
+                    <li onclick="switchTab('exam')">Exam</li>
+                    <li onclick="switchTab('pdf')">PDF / Files</li>
+                    <li onclick="switchTab('admission')">Admission Info</li>
+                    <li onclick="switchTab('course')">Course</li>
+                    <li onclick="switchTab('account')">Account</li>
+                </ul>
+            </nav>
+
+            <main class="content">
+                <section id="tab-dashboard" class="tab-content active">
+                    <div class="card">
+                        <h3>Notice Board Update</h3>
+                        <div class="input-group">
+                            <label>Home Notice Text</label>
+                            <textarea id="noticeInput" rows="3" placeholder="হোম পেজের নোটিশ লিখুন..."></textarea>
+                        </div>
+                        <button class="btn" onclick="saveNotice()">Save Notice</button>
+                    </div>
+                </section>
+
+                <section id="tab-question" class="tab-content">
+                    <div class="card">
+                        <h3>Add New Question</h3>
+                        <div class="input-group"><label>Subject / Topic</label><input type="text" id="qSubject" placeholder="e.g. Physics - Chapter 1"></div>
+                        <div class="input-group"><label>Question Title</label><input type="text" id="qTitle" placeholder="প্রশ্নটি লিখুন"></div>
+                        <div class="input-group"><label>Answer / Explanation</label><textarea id="qAnswer" rows="3" placeholder="উত্তর লিখুন"></textarea></div>
+                        <button class="btn" onclick="addQuestion()">Add Question</button>
+                    </div>
+                    <div class="card">
+                        <h3>Question List</h3>
+                        <table id="questionTable">
+                            <thead><tr><th>Subject</th><th>Question</th><th>Action</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </section>
+
+                <section id="tab-class" class="tab-content">
+                    <div class="card">
+                        <h3>Add Video Class</h3>
+                        <div class="input-group"><label>Class Title</label><input type="text" id="cTitle" placeholder="ক্লাসের শিরোনাম"></div>
+                        <div class="input-group"><label>Video URL / YouTube Link</label><input type="text" id="cUrl" placeholder="https://youtube.com/..."></div>
+                        <button class="btn" onclick="addClass()">Save Class</button>
+                    </div>
+                </section>
+
+                <section id="tab-exam" class="tab-content">
+                    <div class="card">
+                        <h3>Add MCQ Question</h3>
+                        <div class="input-group"><label>Question</label><input type="text" id="exQ" placeholder="MCQ প্রশ্ন"></div>
+                        <div class="input-group"><label>Option A</label><input type="text" id="exOptA"></div>
+                        <div class="input-group"><label>Option B</label><input type="text" id="exOptB"></div>
+                        <div class="input-group"><label>Option C</label><input type="text" id="exOptC"></div>
+                        <div class="input-group"><label>Option D</label><input type="text" id="exOptD"></div>
+                        <div class="input-group"><label>Correct Option (A/B/C/D)</label><input type="text" id="exAns" placeholder="A"></div>
+                        <button class="btn" onclick="addExamQuestion()">Add MCQ</button>
+                    </div>
+                </section>
+
+                <section id="tab-pdf" class="tab-content">
+                    <div class="card">
+                        <h3>Upload / Link PDF or JPG File</h3>
+                        <div class="input-group"><label>File Title</label><input type="text" id="pdfTitle" placeholder="নোট বা ফাইলের নাম"></div>
+                        <div class="input-group"><label>File URL (Drive Link / Image Link / Direct URL)</label><input type="text" id="pdfUrl" placeholder="https://..."></div>
+                        <button class="btn" onclick="addPDF()">Add File</button>
+                    </div>
+                </section>
+
+                <section id="tab-admission" class="tab-content">
+                    <div class="card">
+                        <h3>Post Admission Update</h3>
+                        <div class="input-group"><label>Headline</label><input type="text" id="admTitle" placeholder="ভর্তি সার্কুলার এর বিষয়"></div>
+                        <div class="input-group"><label>Details</label><textarea id="admDetails" rows="4" placeholder="বিস্তারিত তথ্য লিখুন..."></textarea></div>
+                        <button class="btn" onclick="addAdmissionInfo()">Publish Info</button>
+                    </div>
+                </section>
+
+                <section id="tab-course" class="tab-content">
+                    <div class="card">
+                        <h3>Add New Course</h3>
+                        <div class="input-group"><label>Course Title</label><input type="text" id="crsTitle" placeholder="কোর্সের নাম"></div>
+                        <div class="input-group"><label>Price (Free or Amount)</label><input type="text" id="crsPrice" placeholder="e.g. 500 BDT or Free"></div>
+                        <div class="input-group"><label>Course Details</label><textarea id="crsDesc" rows="3" placeholder="কোর্সের বিবরণ"></textarea></div>
+                        <button class="btn" onclick="addCourse()">Add Course</button>
+                    </div>
+                </section>
+
+                <section id="tab-account" class="tab-content">
+                    <div class="card">
+                        <h3>Admin Security Settings</h3>
+                        <div class="input-group"><label>Change Admin Password</label><input type="password" id="newAdminPass" placeholder="নতুন পাসওয়ার্ড দিন"></div>
+                        <button class="btn" onclick="changePassword()">Update Password</button>
+                    </div>
+                </section>
+            </main>
+        </div>
+    </div>
+
+    <script>
+        const DEFAULT_PASS = "admin123";
+        window.onload = function() {
+            if (sessionStorage.getItem('adminLoggedIn') === 'true') {
+                showAdminApp();
+            }
+        };
+
+        function loginAdmin() {
+            const passInput = document.getElementById('adminPass').value;
+            const currentPass = localStorage.getItem('adminPassword') || DEFAULT_PASS;
+            if (passInput === currentPass) {
+                sessionStorage.setItem('adminLoggedIn', 'true');
+                showAdminApp();
+            } else {
+                document.getElementById('errorMsg').style.display = 'block';
+            }
+        }
+
+        function showAdminApp() {
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('adminApp').style.display = 'block';
+            loadStoredData();
+        }
+
+        function logoutAdmin() {
+            sessionStorage.removeItem('adminLoggedIn');
+            location.reload();
+        }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sidebar li').forEach(l => l.classList.remove('active'));
+            document.getElementById('tab-' + tabName).classList.add('active');
+            event.currentTarget.classList.add('active');
+        }
+
+        function saveNotice() {
+            localStorage.setItem('siteNotice', document.getElementById('noticeInput').value);
+            alert('Notice Updated!');
+        }
+
+        function addQuestion() {
+            let subject = document.getElementById('qSubject').value;
+            let title = document.getElementById('qTitle').value;
+            let answer = document.getElementById('qAnswer').value;
+            if(!subject || !title) return alert('সকল তথ্য পূরণ করুন');
+            let q = JSON.parse(localStorage.getItem('questions') || '[]');
+            q.push({ id: Date.now(), subject, title, answer });
+            localStorage.setItem('questions', JSON.stringify(q));
+            document.getElementById('qSubject').value = '';
+            document.getElementById('qTitle').value = '';
+            document.getElementById('qAnswer').value = '';
+            renderQuestions();
+            alert('প্রশ্ন সফলভাবে যোগ করা হয়েছে!');
+        }
+
+        function renderQuestions() {
+            let q = JSON.parse(localStorage.getItem('questions') || '[]');
+            let tbody = document.querySelector('#questionTable tbody');
+            tbody.innerHTML = '';
+            q.forEach(item => {
+                tbody.innerHTML += `<tr><td>${item.subject}</td><td>${item.title}</td><td><button class="delete-btn" onclick="deleteQuestion(${item.id})">Delete</button></td></tr>`;
+            });
+        }
+
+        function deleteQuestion(id) {
+            let q = JSON.parse(localStorage.getItem('questions') || '[]');
+            q = q.filter(x => x.id !== id);
+            localStorage.setItem('questions', JSON.stringify(q));
+            renderQuestions();
+        }
+
+        function addClass() {
+            let title = document.getElementById('cTitle').value;
+            let url = document.getElementById('cUrl').value;
+            if(!title || !url) return alert('সকল তথ্য পূরণ করুন');
+            let c = JSON.parse(localStorage.getItem('classes') || '[]');
+            c.push({ id: Date.now(), title, url });
+            localStorage.setItem('classes', JSON.stringify(c));
+            alert('Class Added Successfully!');
+        }
+
+        function addExamQuestion() {
+            let q = document.getElementById('exQ').value;
+            let a = document.getElementById('exOptA').value;
+            let b = document.getElementById('exOptB').value;
+            let c = document.getElementById('exOptC').value;
+            let d = document.getElementById('exOptD').value;
+            let ans = document.getElementById('exAns').value;
+            if(!q || !ans) return alert('প্রশ্ন ও উত্তর দিন');
+            let exams = JSON.parse(localStorage.getItem('examQuestions') || '[]');
+            exams.push({ id: Date.now(), q, options: [a,b,c,d], ans });
+            localStorage.setItem('examQuestions', JSON.stringify(exams));
+            alert('Exam Question Added!');
+        }
+
+        function addPDF() {
+            let title = document.getElementById('pdfTitle').value;
+            let url = document.getElementById('pdfUrl').value;
+            if(!title || !url) return alert('সকল তথ্য দিন');
+            let p = JSON.parse(localStorage.getItem('pdfs') || '[]');
+            p.push({ id: Date.now(), title, url });
+            localStorage.setItem('pdfs', JSON.stringify(p));
+            alert('File Added Successfully!');
+        }
+
+        function addAdmissionInfo() {
+            let title = document.getElementById('admTitle').value;
+            let details = document.getElementById('admDetails').value;
+            if(!title) return alert('শিরোনাম দিন');
+            let info = JSON.parse(localStorage.getItem('admissionInfo') || '[]');
+            info.push({ id: Date.now(), title, details, date: new Date().toLocaleDateString('bn-BD') });
+            localStorage.setItem('admissionInfo', JSON.stringify(info));
+            alert('Admission Info Published!');
+        }
+
+        function addCourse() {
+            let title = document.getElementById('crsTitle').value;
+            let price = document.getElementById('crsPrice').value;
+            let desc = document.getElementById('crsDesc').value;
+            if(!title) return alert('কোর্সের নাম দিন');
+            let crs = JSON.parse(localStorage.getItem('courses') || '[]');
+            crs.push({ id: Date.now(), title, price, desc });
+            localStorage.setItem('courses', JSON.stringify(crs));
+            alert('Course Added!');
+        }
+
+        function changePassword() {
+            let newPass = document.getElementById('newAdminPass').value;
+            if(newPass.length < 4) return alert('কমপক্ষে ৪ অক্ষরের পাসওয়ার্ড দিন');
+            localStorage.setItem('adminPassword', newPass);
+            alert('Password Updated!');
+        }
+
+        function loadStoredData() {
+            document.getElementById('noticeInput').value = localStorage.getItem('siteNotice') || '';
+            renderQuestions();
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Account - EduPortal</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        :root { --primary: #000080; --secondary: #00BFFF; --bg-light: #f4f6f9; --white: #ffffff; --text-dark: #333333; }
+        body { background-color: var(--bg-light); color: var(--text-dark); animation: fadeIn 0.4s ease; }
+        
+        header { background: var(--primary); color: white; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        header .logo { font-size: 20px; font-weight: bold; }
+        
+        .nav-bar { background: var(--white); display: flex; justify-content: center; gap: 10px; padding: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); overflow-x: auto; white-space: nowrap; }
+        .nav-bar a { text-decoration: none; color: var(--text-dark); font-weight: 600; font-size: 14px; padding: 8px 14px; border-radius: 6px; transition: 0.3s; }
+        .nav-bar a:hover, .nav-bar a.active { background: var(--secondary); color: white; }
+
+        .container { max-width: 600px; margin: 40px auto; padding: 0 15px; }
+        .profile-card { background: white; padding: 30px; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); text-align: center; animation: fadeIn 0.4s ease; }
+        .profile-card h2 { color: var(--primary); margin-bottom: 10px; }
+        .profile-card p { color: #666; font-size: 14px; margin-bottom: 20px; }
+        
+        .info-box { background: var(--bg-light); padding: 15px; border-radius: 6px; text-align: left; margin-bottom: 15px; font-size: 14px; }
+        .info-box strong { color: var(--primary); }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+        @media(max-width: 768px) { .nav-bar { justify-content: flex-start; } }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">EduPortal</div>
+        <div style="font-size: 14px;">Account</div>
+    </header>
+
+    <div class="nav-bar">
+        <a href="index.html">Dashboard</a>
+        <a href="question-bank.html">Question Bank</a>
+        <a href="class.html">Class</a>
+        <a href="exam.html">Exam</a>
+        <a href="pdf.html">PDF</a>
+        <a href="admission-info.html">Admission</a>
+        <a href="course.html">Course</a>
+        <a href="account.html" class="active">Account</a>
+    </div>
+
+    <div class="container">
+        <div class="profile-card">
+            <h2>শিক্ষার্থী প্রোফাইল</h2>
+            <p>আপনার অ্যাকাউন্ট সংক্রান্ত বিবরণ</p>
+            <div class="info-box">
+                <strong>ব্যবহারকারী আইডি:</strong> STD-2026-X<br>
+                <strong>স্ট্যাটাস:</strong> সক্রিয় (Active)<br>
+                <strong>প্লাটফর্ম:</strong> EduPortal Education System
+            </div>
+        </div>
+    </div>
+</body>
+</html>
